@@ -14,6 +14,7 @@ from packages.botapi.state_controller import StateController
 from packages.botmaster import BotMaster
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
+from telebot.states import State
 
 
 log_dir = Config.GetValue("LOG_DIR")
@@ -45,6 +46,7 @@ class BaseCallbackApiRoute:
     __keyboard: ReplyKeyboardMarkup | InlineKeyboardMarkup
     __session: _AsyncGeneratorContextManager[AsyncSession]
     __logger: logging.Logger
+    __statmentState: State | str = None
 
     # Getters
     @property
@@ -91,6 +93,10 @@ class BaseCallbackApiRoute:
     def Log(self):
         """"""
         return self.__logger
+    
+    @property
+    def StatmentState(self):
+        return self.__statmentState
 
     # Setters
     @Callback.setter
@@ -119,6 +125,10 @@ class BaseCallbackApiRoute:
 
     @Log.setter
     def Log(self, value: logging.Logger): self.__logger = value
+    
+    @StatmentState.setter
+    def StatmentState(self, value: State):
+        self.__statmentState = value
 
     def __new__(cls):
         instance = super().__new__(cls)

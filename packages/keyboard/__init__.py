@@ -14,12 +14,12 @@ class ReplyKeyboard:
         resizeKeyboard: bool | None = None,
         oneTimeKeyboard: bool | None = None,
         selective: bool | None = None,
-        rowWidth: int = 0,
+        rowWidth: int = 1,
         inputFieldPlaceholder: str | None = None,
         isPersistent: bool | None = None
     ) -> None:
 
-        self._buttonsCollection = list()
+        self.__buttonsCollection = []
 
         self.Keyboard = ReplyKeyboardMarkup(
             resizeKeyboard,
@@ -65,7 +65,7 @@ class ReplyKeyboard:
     def __imul__(self, buttons: list[KeyboardButton] | KeyboardButton) -> "ReplyKeyboard":
         if isinstance(buttons, KeyboardButton):
             self.Keyboard.row(buttons)
-            self._buttonsCollection.append([buttons])
+            self.__buttonsCollection.append([buttons])
         elif isinstance(buttons, list):
             self.AddButtons(buttons)
         else:

@@ -143,6 +143,7 @@ class BotApi:
             handler.Commands,
             handler.Regexp,
             handler.Func,
+            state=handler.StatmentState,
             is_digit=handler.IsDigit,
             pass_bot=True
         )
@@ -152,6 +153,7 @@ class BotApi:
         self.Botmas.Bot.register_callback_query_handler(
             handler, # type: ignore
             handler.Func,
+            state=handler.StatmentState,
             pass_bot=True
         )
         self.Log.info(f"Added a new callback handler {handler.__class__.__name__}.")

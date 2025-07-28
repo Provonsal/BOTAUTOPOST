@@ -14,7 +14,12 @@ class User:
     
     def __init__(self, telegramid: int, user_id: UUID | None = None):
         self.TelegramId = telegramid
-        self.UserId = user_id if user_id is not None else uuid4()
+        if user_id is not None:
+            self.UserId = user_id
+        else:
+            print(self.TelegramId, "UserId not found")
+            self.UserId = uuid4()
+        # self.UserId = user_id if user_id is not None else uuid4()
         
     @classmethod
     def from_model(cls: "User", model: Users) -> "User":
@@ -30,7 +35,7 @@ class User:
         return User.from_model(result) if result is not None else None
     
     @staticmethod
-    async def get_by_telegram_id(session: _AsyncGeneratorContextManager[AsyncSession], telegram_id: int):
+    async def get_by_telegram_id(session: _AsyncGeneratorContextManager[AsyncSession], telegram_id: int) -> "User":
         async with session as s:
             result = (await s.execute(select(Users).where(Users.TelegramId == telegram_id))).scalar()
             
@@ -70,6 +75,16 @@ class User:
             result = (await s.execute(select(PassANDQues.Question).where(PassANDQues.UserId == self.UserId))).scalar()
             
             return result
+    
+    async def update_chat_id(self, session: _AsyncGeneratorContextManager[AsyncSession], chat_id: int):
+                
+        async with session as s:
+            found_chat_id = (await s.execute(select(UsersGoupsAndChannels.ChatId).where(UsersGoupsAndChannels.UserId == self.UserId))).scalar()
+            if found_chat_id is not None:
+                await s.execute(update(UsersGoupsAndChannels).where(UsersGoupsAndChannels.UserId == self.UserId).values(ChatId=chat_id))
+            else:
+                await s.execute(insert(UsersGoupsAndChannels).values(ChatId=chat_id, UserId=self.UserId))
+            
     
     def to_dict(self) -> dict:
         return {
